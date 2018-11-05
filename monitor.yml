@@ -2,6 +2,8 @@
   require 'json'
   require 'yaml'
 
+  @@metric_product = "PROMETHEUS"
+
   def task(name, file, binding)
     {
       task: name,
@@ -9,12 +11,38 @@
     }.to_json
   end
 
-  def emit_datadog_metric(name, value)
-    task(
-      "emit-datadog-metric-#{name}",
-      'tasks/emit_datadog_metric.yml.erb',
-      binding
-    )
+  # def emit_datadog_metric(name, value, binding)
+  #   task(
+  #     "emit-datadog-metric-#{name}",
+  #     'tasks/emit_datadog_metric.yml.erb',
+  #     binding
+  #   )
+  # end
+
+  # def emit_prometheus_metric(name, value, binding)
+  #   task(
+  #     "emit-prometheus-metric-#{name}",
+  #     'tasks/emit_prometheus_metric.yml.erb',
+  #     binding
+  #   )
+  # end
+
+  def emit_metric(name, value)
+    if @@metric_product.casecmp("PROMETHEUS") == 0
+      task(
+        "emit-datadog-metric-#{name}",
+        'tasks/emit_datadog_metric.yml.erb',
+        binding
+      )
+    elsif @@metric_product.casecmp("DATADOG") == 0
+      task(
+        "emit-datadog-metric-#{name}",
+        'tasks/emit_datadog_metric.yml.erb',
+        binding
+      )
+    else
+      puts "Please set METRIC_VENDOR to either DATADOG or PROMETHEUS"
+    end
   end
 %>
 
@@ -26,16 +54,19 @@ resources:
 
 - name: fly
   type: github-release
-  check_every: 1h
+  check_every: 5h
   source:
     user: concourse
     repository: concourse
-    access_token: ((github_access_token))
+    insecure: true
+    access_token: testtoken
+    # access_token: ((github_access_token))
+
 
 - name: oxygen-mask
   type: git
   source:
-    uri: https://github.com/concourse/oxygen-mask
+    uri: https://github.com/doughoke/oxygen-mask
 
 jobs:
 - name: fly-hijack-failing-build
@@ -90,8 +121,8 @@ jobs:
             -b $(fly -t ci builds -j "$job_name" | head -1 | awk '{print $3}') \
             echo Hello World
 
-  on_failure: <%= emit_datadog_metric('concourse.fly_hijack_failing_build', 0) %>
-  on_success: <%= emit_datadog_metric('concourse.fly_hijack_failing_build', 1) %>
+  on_failure: <%= emit_metric('concourse.fly_hijack_failing_build', 0) %>
+  on_success: <%= emit_metric('concourse.fly_hijack_failing_build', 1) %>
 
 - name: run-existing-pipeline
   build_logs_to_retain: 20
@@ -139,8 +170,8 @@ jobs:
           fly -t ci sync
           build_number=$(timeout 5 fly -t ci trigger-job -j "$PIPELINE_NAME/simple-job" | cut -d'#' -f 2)
           timeout 60 fly -t ci watch -j "$PIPELINE_NAME/simple-job" -b "$build_number"
-  on_failure: <%= emit_datadog_metric('concourse.run_existing_pipeline', 0) %>
-  on_success: <%= emit_datadog_metric('concourse.run_existing_pipeline', 1) %>
+  on_failure: <%= emit_metric('concourse.run_existing_pipeline', 0) %>
+  on_success: <%= emit_metric('concourse.run_existing_pipeline', 1) %>
 
 - name: view-public-pipeline
   build_logs_to_retain: 20
@@ -160,8 +191,8 @@ jobs:
       PIPELINE_NAME: ((pipeline_name))
       USERNAME: ((username))
       PASSWORD: ((password))
-  on_failure: <%= emit_datadog_metric('concourse.view_public_pipeline', 0) %>
-  on_success: <%= emit_datadog_metric('concourse.view_public_pipeline', 1) %>
+  on_failure: <%= emit_metric('concourse.view_public_pipeline', 0) %>
+  on_success: <%= emit_metric('concourse.view_public_pipeline', 1) %>
 
 - name: view-build-history
   build_logs_to_retain: 20
@@ -182,8 +213,8 @@ jobs:
       PIPELINE_NAME: ((pipeline_name))
       USERNAME: ((username))
       PASSWORD: ((password))
-  on_failure: <%= emit_datadog_metric('concourse.view_build_history', 0) %>
-  on_success: <%= emit_datadog_metric('concourse.view_build_history', 1) %>
+  on_failure: <%= emit_metric('concourse.view_build_history', 0) %>
+  on_success: <%= emit_metric('concourse.view_build_history', 1) %>
 
 - name: create-and-run-new-pipeline
   build_logs_to_retain: 20
@@ -248,5 +279,5 @@ jobs:
 
           fly -t ci watch -j new-pipeline/auto-triggering
           fly -t ci destroy-pipeline -n -p new-pipeline
-  on_failure: <%= emit_datadog_metric('concourse.create_and_run_new_pipeline', 0) %>
-  on_success: <%= emit_datadog_metric('concourse.create_and_run_new_pipeline', 1) %>
+  on_failure: <%= emit_metric('concourse.create_and_run_new_pipeline', 0) %>
+  on_success: <%= emit_metric('concourse.create_and_run_new_pipeline', 1) %>

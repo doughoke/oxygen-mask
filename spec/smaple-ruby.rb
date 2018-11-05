@@ -27,19 +27,24 @@ end
 # end
 
 def emit_metric(name, value)
-  if @@metric_product.casecmp("PROMETHEUS") == 0
-    task(
-      "emit-datadog-metric-#{name}",
-      'tasks/emit_datadog_metric.yml.erb',
-      binding
-    )
-  elsif @@metric_product.casecmp("DATADOG") == 0
-    task(
-      "emit-datadog-metric-#{name}",
-      'tasks/emit_datadog_metric.yml.erb',
-      binding
-    )
-  else
-    puts "Please set METRIC_VENDOR to either DATADOG or PROMETHEUS"
-  end
+  task(
+    "emit-prometheus-metric-#{name}",
+    'tasks/emit_prometheus_metric.yml.erb',
+    binding
+  )
+  # if @@metric_product.casecmp("PROMETHEUS") == 0
+  #   task(
+  #     "emit-prometheus-metric-#{name}",
+  #     'tasks/emit_prometheus_metric.yml.erb',
+  #     binding
+  #   )
+  # elsif @@metric_product.casecmp("DATADOG") == 0
+  #   task(
+  #     "emit-datadog-metric-#{name}",
+  #     'tasks/emit_datadog_metric.yml.erb',
+  #     binding
+  #   )
+  # else
+  #   puts "Please set METRIC_VENDOR to either DATADOG or PROMETHEUS"
+  # end
 end

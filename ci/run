@@ -20,6 +20,6 @@ export BUNDLE_PATH=${PWD}/gems
 cd oxygen-mask/
 gem sources  --remove https://rubygems.org/ --add $RUBY_GEM_PROXY
 gem sources
-bundle config mirror.$RUBY_GEM_PROXY
+bundle config mirror.https://rubygems.org $RUBY_GEM_PROXY
 bundle
 bundle exec rspec "$@" $TESTS_TO_RUN

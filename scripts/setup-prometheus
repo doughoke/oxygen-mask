@@ -11,8 +11,8 @@ function usage() {
     echo "  -u&-p: basic auth username and password for the team above"
     echo "  -m: prometheus push gateway url -- leave out /metrics"
     echo "  -g: github access token to not be rate limited for getting fly CLI"
-    echo "  -f: delete the previous pipelines, this help clean up build history"
     echo "  -r: ruby gem proxy if you are behind a hardened firewall (nexus or jfrog)"
+    echo "  -f: delete the previous pipelines, this help clean up build history"
   } >&2
   exit 1
 }
@@ -26,8 +26,8 @@ while getopts ":fx:n:t:u:p:m:g:r" opt; do
     p) PASSWORD="$OPTARG";;
     m) PROMETHEUS_GATEWAY_URL="$OPTARG";;
     g) ACCESS_TOKEN="$OPTARG";;
-    f) DELETE_THE_PIPELINES="true"
     r) RUBY_GEM_PROXY="$OPTARG";;
+    f) DELETE_THE_PIPELINES="true"
   esac
 done
 

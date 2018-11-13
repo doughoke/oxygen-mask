@@ -12,11 +12,12 @@ function usage() {
     echo "  -m: prometheus push gateway url -- leave out /metrics"
     echo "  -g: github access token to not be rate limited for getting fly CLI"
     echo "  -f: delete the previous pipelines, this help clean up build history"
+    echo "  -r: ruby gem proxy if you are behind a hardened firewall (nexus or jfrog)"
   } >&2
   exit 1
 }
 
-while getopts ":fx:n:t:u:p:m:g:" opt; do
+while getopts ":fx:n:t:u:p:m:g:r" opt; do
   case $opt in
     n) TEAMNAME="$OPTARG";;
     t) MONITORED_TARGET="$OPTARG";;
@@ -26,6 +27,7 @@ while getopts ":fx:n:t:u:p:m:g:" opt; do
     m) PROMETHEUS_GATEWAY_URL="$OPTARG";;
     g) ACCESS_TOKEN="$OPTARG";;
     f) DELETE_THE_PIPELINES="true"
+    r) RUBY_GEM_PROXY="$OPTARG";;
   esac
 done
 
@@ -61,7 +63,10 @@ fi
 if [ -n "$PROMETHEUS_GATEWAY_URL" ]; then
   cmd+=(-v prometheus_gateway_url="$PROMETHEUS_GATEWAY_URL")
 fi
-  
+if [ -n "$RUBY_GEM_PROXY" ]; then
+  cmd+=(-v ruby_gem_proxy="$RUBY_GEM_PROXY")
+fi
+
   cmd+=(-v metric_product="PROMETHEUS")
 
 if [ -n "$DELETE_THE_PIPELINES" ]; then

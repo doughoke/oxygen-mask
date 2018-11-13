@@ -18,5 +18,6 @@ export GEM_HOME=${PWD}/gems
 export BUNDLE_PATH=${PWD}/gems
 
 cd oxygen-mask/
+gem sources  --remove http://rubygems.org/ --add $RUBY_GEM_PROXY
 bundle
 bundle exec rspec "$@" $TESTS_TO_RUN

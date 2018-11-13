@@ -1,6 +1,6 @@
-## Oxygen Mask
+## Oxygen Mask Prometheus
 
-Oxygen mask is the concourse SLI montoring suite. It sets up pipelines that run periodically and emit SLI metrics to datadog.
+Oxygen mask is the concourse SLI montoring suite. It sets up pipelines that run periodically and emit SLI metrics to prometheus.
 
 ### Usage
 

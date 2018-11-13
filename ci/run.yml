@@ -12,6 +12,7 @@ params:
   USERNAME:
   PASSWORD:
   TESTS_TO_RUN:
+  RUBY_GEM_PROXY: https://rubygems.org
 
 inputs:
 - name: oxygen-mask

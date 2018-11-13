@@ -2,7 +2,7 @@
   require 'json'
   require 'yaml'
 
-  # @@metric_product = "PROMETHEUS"
+  @@metric_product = "PROMETHEUS"
 
   def task(name, file, binding)
     {
@@ -11,43 +11,22 @@
     }.to_json
   end
 
-  # def emit_datadog_metric(name, value, binding)
-  #   task(
-  #     "emit-datadog-metric-#{name}",
-  #     'tasks/emit_datadog_metric.yml.erb',
-  #     binding
-  #   )
-  # end
-
-  # def emit_prometheus_metric(name, value, binding)
-  #   task(
-  #     "emit-prometheus-metric-#{name}",
-  #     'tasks/emit_prometheus_metric.yml.erb',
-  #     binding
-  #   )
-  # end
-
   def emit_metric(name, value)
-    task(
-      "emit-prometheus-metric-#{name}",
-      'tasks/emit_prometheus_metric.yml.erb',
-      binding
-    )
-    # if @@metric_product.casecmp("PROMETHEUS") == 0
-    #   task(
-    #     "emit-prometheus-metric-#{name}",
-    #     'tasks/emit_prometheus_metric.yml.erb',
-    #     binding
-    #   )
-    # elsif @@metric_product.casecmp("DATADOG") == 0
-    #   task(
-    #     "emit-datadog-metric-#{name}",
-    #     'tasks/emit_datadog_metric.yml.erb',
-    #     binding
-    #   )
-    # else
-    #   puts "Please set METRIC_VENDOR to either DATADOG or PROMETHEUS"
-    # end
+    if @@metric_product.casecmp("PROMETHEUS") == 0
+      task(
+        "emit-prometheus-metric-#{name}",
+        'tasks/emit_prometheus_metric.yml.erb',
+        binding
+      )
+    elsif @@metric_product.casecmp("DATADOG") == 0
+      task(
+        "emit-datadog-metric-#{name}",
+        'tasks/emit_datadog_metric.yml.erb',
+        binding
+      )
+    else
+      puts "Please set METRIC_VENDOR to either DATADOG or PROMETHEUS"
+    end
   end
 %>
 
@@ -59,13 +38,12 @@ resources:
 
 - name: fly
   type: github-release
-  check_every: 5h
+  check_every: 5m
   source:
     user: concourse
     repository: concourse
     insecure: true
-    access_token: testtoken
-    # access_token: ((github_access_token))
+    access_token: ((github_access_token))
 
 
 - name: oxygen-mask
@@ -196,6 +174,7 @@ jobs:
       PIPELINE_NAME: ((pipeline_name))
       USERNAME: ((username))
       PASSWORD: ((password))
+      RUBY_GEM_PROXY: ((ruby_gem_proxy))
   on_failure: <%= emit_metric('concourse.view_public_pipeline', 0) %>
   on_success: <%= emit_metric('concourse.view_public_pipeline', 1) %>
 
@@ -218,6 +197,7 @@ jobs:
       PIPELINE_NAME: ((pipeline_name))
       USERNAME: ((username))
       PASSWORD: ((password))
+      RUBY_GEM_PROXY: ((ruby_gem_proxy))
   on_failure: <%= emit_metric('concourse.view_build_history', 0) %>
   on_success: <%= emit_metric('concourse.view_build_history', 1) %>
 

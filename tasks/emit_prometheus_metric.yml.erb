@@ -15,4 +15,6 @@ run:
   path: bash
   args:
     - -c
-    - curl X POST -H "Content-Type: application/json" --data-binary $'# TYPE <%= name %> gauge\n<%= name $value %>\n' ${PROMETHEUS_GATEWAY_URL}/metrics/job/oxygen_mask
+    - set -x
+    - export sanitized_name=`echo <%= name %> | sed 's/\./_/g'`
+    - curl -X POST ${PROMETHEUS_GATEWAY_URL}/metrics/job/oxygen_mask --data-binary $'# TYPE ${sanitized_name} gauge\n ${sanitized_name} <%= value %>\n' 

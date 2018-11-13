@@ -17,7 +17,7 @@ function usage() {
   exit 1
 }
 
-while getopts ":fx:n:t:u:p:m:g:r" opt; do
+while getopts ":fx:n:t:u:p:m:g:r:" opt; do
   case $opt in
     n) TEAMNAME="$OPTARG";;
     t) MONITORED_TARGET="$OPTARG";;

@@ -15,6 +15,6 @@ run:
   path: bash
   args:
     - -c
-    - set -x
+    - set -x -e -u
     - export sanitized_name=`echo <%= name %> | sed 's/\./_/g'`
     - curl -X POST ${PROMETHEUS_GATEWAY_URL}/metrics/job/oxygen_mask --data-binary $'# TYPE ${sanitized_name} gauge\n ${sanitized_name} <%= value %>\n' 

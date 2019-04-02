@@ -65,7 +65,7 @@ jobs:
       image_resource:
         type: docker-image
         source:
-          repository: concourse/atc-ci
+          repository: ((internal_docker_repo))concourse/atc-ci
       inputs:
       - name: fly
       params:
@@ -120,7 +120,7 @@ jobs:
       image_resource:
         type: docker-image
         source:
-          repository: concourse/atc-ci
+          repository: ((internal_docker_repo))concourse/atc-ci
       inputs:
       - name: fly
       params:
@@ -175,6 +175,7 @@ jobs:
       USERNAME: ((username))
       PASSWORD: ((password))
       RUBY_GEM_PROXY: ((ruby_gem_proxy))
+      INTERNAL_DOCKER_REPO: ((internal_docker_repo))
   on_failure: <%= emit_metric('concourse.view_public_pipeline', 0) %>
   on_success: <%= emit_metric('concourse.view_public_pipeline', 1) %>
 
@@ -198,6 +199,7 @@ jobs:
       USERNAME: ((username))
       PASSWORD: ((password))
       RUBY_GEM_PROXY: ((ruby_gem_proxy))
+      INTERNAL_DOCKER_REPO: ((internal_docker_repo))
   on_failure: <%= emit_metric('concourse.view_build_history', 0) %>
   on_success: <%= emit_metric('concourse.view_build_history', 1) %>
 
@@ -218,7 +220,7 @@ jobs:
       image_resource:
         type: docker-image
         source:
-          repository: concourse/atc-ci
+          repository: ((internal_docker_repo))concourse/atc-ci
 
       inputs:
       - name: fly
@@ -230,6 +232,7 @@ jobs:
         PIPELINE_NAME: ((pipeline_name))
         USERNAME: ((username))
         PASSWORD: ((password))
+        INTERNAL_DOCKER_REPO: ((internal_docker_repo))
 
       run:
         user: root

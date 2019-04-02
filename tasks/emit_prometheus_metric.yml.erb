@@ -2,12 +2,13 @@
 image_resource:
   type: docker-image
   source:
-    repository: ${INTERNAL_DOCKER_REPO}buildpack-deps
+    repository: ((INTERNAL_DOCKER_REPO))buildpack-deps
     tag: trusty
 
 params:
   PROMETHEUS_GATEWAY_URL: ((prometheus_gateway_url))
   ATC_URL: ((atc_url))
+  INTERNAL_DOCKER_REPO: ((internal_docker_repo))
 
 platform: linux
 

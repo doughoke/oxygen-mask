@@ -167,6 +167,8 @@ jobs:
     params: {globs: [fly_linux_amd64]}
   - task: check-pipeline-returns-known-string
     file: oxygen-mask/ci/run.yml
+    vars:
+      internal_docker_repo: ((internal_docker_repo))
     params:
       TESTS_TO_RUN: spec/public_pipeline_spec.rb
       ATC_URL: ((atc_url))

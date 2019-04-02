@@ -49,8 +49,10 @@ if [ -n "$DELETE_THE_PIPELINES" ]; then
 fi
 
 if [ -n "$INTERNAL_DOCKER_REPO" ]; then
+  echo "docker repo passed"
   fly -t "$MONITORED_TARGET" set-pipeline -n -p "$PIPELINE_NAME" -c pipeline.yml -v internal_docker_repo="$INTERNAL_DOCKER_REPO"
 else
+  echo "docker repo not passed"
   fly -t "$MONITORED_TARGET" set-pipeline -n -p "$PIPELINE_NAME" -c pipeline.yml
 fi
 

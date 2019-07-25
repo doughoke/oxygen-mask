@@ -29,6 +29,11 @@
     end
   end
 %>
+resource_types:
+- name: github-release
+  type: registry-image
+  source:
+    repository: concourse/github-release-resource
 
 resources:
 - name: ((interval))
@@ -59,11 +64,11 @@ jobs:
   - get: ((interval))
     trigger: true
   - get: fly
-    params: {globs: [fly_linux_amd64]}
+    params: {globs: [fly-*-linux-amd64.tgz]}
   - task: trigger-and-wait-for-a-build
     config:
       image_resource:
-        type: docker-image
+        type: registry-image
         source:
           repository: ((internal_docker_repo))concourse/atc-ci
       inputs:
@@ -86,7 +91,9 @@ jobs:
 
           set -e
 
-          install fly/fly_linux_amd64 /usr/bin/fly
+          tar -zxf fly/fly-*-linux-amd64.tgz -C fly/
+          install fly/fly /usr/bin/fly
+          # install fly/fly_linux_amd64 /usr/bin/fly
 
           job_name="$PIPELINE_NAME/failing"
 
@@ -114,11 +121,11 @@ jobs:
   - get: ((interval))
     trigger: true
   - get: fly
-    params: {globs: [fly_linux_amd64]}
+    params: {globs: [fly-*-linux-amd64.tgz]}
   - task: trigger-and-wait-for-a-build
     config:
       image_resource:
-        type: docker-image
+        type: registry-image
         source:
           repository: ((internal_docker_repo))concourse/atc-ci
       inputs:
@@ -141,7 +148,9 @@ jobs:
 
           set -euo pipefail
 
-          install fly/fly_linux_amd64 /usr/bin/fly
+          tar -zxf fly/fly-*-linux-amd64.tgz -C fly/
+          install fly/fly /usr/bin/fly
+          #install fly/fly_linux_amd64 /usr/bin/fly
 
           fly -t ci login -c $ATC_URL -n $TEAM_NAME -u $USERNAME -p $PASSWORD -k || {
               curl "$ATC_URL/api/v1/cli?arch=amd64&platform=linux" --output /tmp/fly
@@ -164,7 +173,7 @@ jobs:
     trigger: true
   - get: oxygen-mask
   - get: fly
-    params: {globs: [fly_linux_amd64]}
+    params: {globs: [fly-*-linux-amd64.tgz]}
   - task: check-pipeline-returns-known-string
     file: oxygen-mask/ci/run.yml
     vars:
@@ -177,7 +186,7 @@ jobs:
       USERNAME: ((username))
       PASSWORD: ((password))
       RUBY_GEM_PROXY: ((ruby_gem_proxy))
-      INTERNAL_DOCKER_REPO: ((internal_docker_repo))
+      #INTERNAL_DOCKER_REPO: ((internal_docker_repo))
   on_failure: <%= emit_metric('concourse.view_public_pipeline', 0) %>
   on_success: <%= emit_metric('concourse.view_public_pipeline', 1) %>
 
@@ -190,7 +199,7 @@ jobs:
   - get: oxygen-mask
   - get: fly
     params:
-      globs: [fly_linux_amd64]
+      globs: [fly-*-linux-amd64.tgz]
   - task: check-build-history-is-viewable
     file: oxygen-mask/ci/run.yml
     vars:
@@ -203,7 +212,7 @@ jobs:
       USERNAME: ((username))
       PASSWORD: ((password))
       RUBY_GEM_PROXY: ((ruby_gem_proxy))
-      INTERNAL_DOCKER_REPO: ((internal_docker_repo))
+      #INTERNAL_DOCKER_REPO: ((internal_docker_repo))
   on_failure: <%= emit_metric('concourse.view_build_history', 0) %>
   on_success: <%= emit_metric('concourse.view_build_history', 1) %>
 
@@ -215,14 +224,14 @@ jobs:
     trigger: true
   - get: fly
     params:
-      globs: [fly_linux_amd64]
+      globs: [fly-*-linux-amd64.tgz]
   - get: oxygen-mask
   - task: create-and-run-new-pipeline
     config:
       platform: linux
 
       image_resource:
-        type: docker-image
+        type: registry-image
         source:
           repository: ((internal_docker_repo))concourse/atc-ci
 
@@ -236,7 +245,7 @@ jobs:
         PIPELINE_NAME: ((pipeline_name))
         USERNAME: ((username))
         PASSWORD: ((password))
-        INTERNAL_DOCKER_REPO: ((internal_docker_repo))
+        #INTERNAL_DOCKER_REPO: ((internal_docker_repo))
 
       run:
         user: root
@@ -250,7 +259,9 @@ jobs:
 
           set -e -u -x
 
-          install fly/fly_linux_amd64 /usr/bin/fly
+          tar -zxf fly/fly-*-linux-amd64.tgz -C fly/
+          install fly/fly /usr/bin/fly
+          #install fly/fly_linux_amd64 /usr/bin/fly
 
           fly -t ci login -c $ATC_URL -n $TEAM_NAME -u $USERNAME -p $PASSWORD -k || {
               curl "$ATC_URL/api/v1/cli?arch=amd64&platform=linux" --output /tmp/fly

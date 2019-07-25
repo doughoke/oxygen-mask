@@ -33,7 +33,7 @@ resource_types:
 - name: github-release
   type: registry-image
   source:
-    repository: concourse/github-release-resource
+    repository: ((internal_docker_repo))concourse/github-release-resource
 
 resources:
 - name: ((interval))

@@ -16,4 +16,5 @@ datadog
 `scripts/setup-datadog -t <teamname> -u <username> -p <password> -d <datadog_api_key> -g <github_access_token>`
 
 prometheus gateway
-`scripts/setup-prometheus -t <monitored-teamname> -x <monitored-team> -u <username> -p <password> -d <datadog_api_key> -g <github_access_token>`
+`scripts/setup-prometheus -t <monitored-teamname/target> -x <monitoring-teamname/target> -n <monitored-team-name> -u <username> -p <password> -m <prometheus-pushgateway-url> -d <docker-repo> -r <ruby-gem-proxy> -g <github_access_token>`
+
